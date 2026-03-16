@@ -2,32 +2,32 @@
 PRAGMA foreign_keys = ON;
 
 -- Crear tablas
-CREATE TABLE IF NOT EXISTS libro (
-    id_libro INTEGER PRIMARY KEY,
-    titulo TEXT NOT NULL,
-    fecha TEXT NOT NULL,
+CREATE TABLE IF NOT EXISTS book (
+    id_book INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    year TEXT NOT NULL,
     isbn TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS autor (
-    id_autor INTEGER PRIMARY KEY,
-    nombre TEXT NOT NULL,
-    apellido TEXT NOT NULL,
-    correo TEXT NULL UNIQUE
+CREATE TABLE IF NOT EXISTS author (
+    id_author INTEGER PRIMARY KEY,
+    fname TEXT NOT NULL,
+    lname TEXT NOT NULL,
+    email TEXT NULL UNIQUE
 );
 
-CREATE Table IF NOT EXISTS libro_autor (
-    libro_id INTEGER NOT NULL,
-    autor_id INTEGER NOT NULL,
-    FOREIGN KEY (libro_id) REFERENCES libro (id_libro),
-    FOREIGN KEY (autor_id) REFERENCES autor (id_autor),
+CREATE Table IF NOT EXISTS book_author (
+    book_id INTEGER NOT NULL,
+    author_id INTEGER NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES book (id_book),
+    FOREIGN KEY (author_id) REFERENCES author (id_author),
     -- Clave primaria compuesta -> asegura que un autor no se relacione dos veces en el mismo libro.
-    PRIMARY KEY (libro_id, autor_id)
+    PRIMARY KEY (book_id, author_id)
 );
 
 -- Insertar libros
 INSERT INTO
-    libro (titulo, fecha, isbn)
+    book (title, year, isbn)
 VALUES (
         'Un mundo feliz',
         '1932',
@@ -51,21 +51,21 @@ VALUES (
 
 -- Insertar autores
 INSERT INTO
-    autor (nombre, apellido)
+    author (fname, lname)
 VALUES ('Aldous', 'Huxley'),
     ('Ana', 'Frank'),
     ('Jostein', 'Jostein Gaarder');
 
 INSERT INTO
-    libro_autor (libro_id, autor_id)
+    book_author (book_id, author_id)
 VALUES (1, 1),
     (2, 2),
     (3, 3),
     (4, 1);
 
 -- Consulta con tablas relacionadas
-SELECT nombre, apellido, titulo
+SELECT fname, lname, title
 FROM
-    libro_autor
-    INNER JOIN autor ON libro_autor.autor_id = autor.id_autor
-    INNER JOIN libro ON libro_autor.libro_id = libro.id_libro;
+    book_author
+    INNER JOIN author ON book_author.author_id = author.id_author
+    INNER JOIN book ON book_author.book_id = book.id_book;
