@@ -3,7 +3,7 @@ PRAGMA foreign_keys = ON;
 
 -- Crear tablas
 CREATE TABLE IF NOT EXISTS book (
-    id_book INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
     year TEXT NOT NULL,
     isbn TEXT NOT NULL

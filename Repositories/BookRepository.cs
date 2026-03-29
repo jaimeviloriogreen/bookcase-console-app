@@ -1,86 +1,44 @@
+using Bookcase.Models;
 using Bookcase.Database;
 
-class BookRepository(Database db) {
-  private readonly Database _db = db;
+class BookRepository(AppDbContext context) {
+  private readonly AppDbContext _context = context;
 
-  public List<BoookModel> SelectAll() {
-    using var connection = _db.GetConnection();
-    using var command = connection.CreateCommand();
-
-    command.CommandText = @"
-      SELECT * FROM book;
-    ";
-
-    using var reader = command.ExecuteReader();
-
-    List<BoookModel> books = [];
-
-    while (reader.Read()) {
-      books.Add(
-        new BoookModel() {
-          Id = reader.GetInt32(0),
-          Title = reader.GetString(1),
-          Year = reader.GetString(2),
-          Isbn = reader.GetString(3)
-        }
-      );
-    }
-
-    return books;
-
+  public List<BookModel> SelectAll() {
+    return _context.Books.ToList();
   }
 
   public int Delete(int id) {
-    using var connection = _db.GetConnection();
-    using var command = connection.CreateCommand();
+    var book = _context.Books.Find(id);
 
-    command.CommandText = @"
-      DELETE FROM book WHERE id_book = @id;
-    ";
-    command.Parameters.AddWithValue("@id", id);
-
-    int rowDeleted = command.ExecuteNonQuery();
-
-    return rowDeleted;
+    if (book is null) return 0;
+    _context.Books.Remove(book);
+    return _context.SaveChanges();
   }
 
+  // public BookModel? FindOne(int id) {
+  //   var book = _context.Books.Find(id);
+  //   if (book is null) return null;
+
+  //   return book;
+  // }
+
   public int Insert(string title, string year, string isbn) {
-    using var connection = _db.GetConnection();
-    using var command = connection.CreateCommand();
-
-    command.CommandText = @"
-      INSERT INTO
-        book (title, year, isbn)
-      VALUES (@title,@year,@isbn);
-    ";
-
-    command.Parameters.AddWithValue("@title", title);
-    command.Parameters.AddWithValue("@year", year);
-    command.Parameters.AddWithValue("@isbn", isbn);
-
-    int rowInserted = command.ExecuteNonQuery();
-
-    return rowInserted;
+    var book = new BookModel { Title = title, Year = year, Isbn = isbn };
+    _context.Books.Add(book);
+    return _context.SaveChanges();
   }
 
   public int Update(string title, string year, string isbn, int id) {
-    using var connection = _db.GetConnection();
-    using var command = connection.CreateCommand();
+    var book = _context.Books.Find(id);
 
-    command.CommandText = @"
-      UPDATE 
-        book 
-      SET title = @title, year = @year, isbn = @isbn
-      WHERE id_book = @id;
-    ";
+    // Es porque el libro existe
+    if (book is null) return 0;
 
-    command.Parameters.AddWithValue("@title", title);
-    command.Parameters.AddWithValue("@year", year);
-    command.Parameters.AddWithValue("@isbn", isbn);
-    command.Parameters.AddWithValue("@id", id);
+    book.Title = title;
+    book.Year = year;
+    book.Isbn = isbn;
 
-    int rowUpdated = command.ExecuteNonQuery();
-
-    return rowUpdated;
+    return _context.SaveChanges();
   }
 }

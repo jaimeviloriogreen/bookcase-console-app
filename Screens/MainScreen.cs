@@ -33,6 +33,7 @@ class MainScreen(BookService bookService) {
           table.AddColumn("Isbn");
 
           foreach (var book in _bookService.SelectAll()) {
+
             table.AddRow(
               $"{book.Id}",
               $"{book.Title}",

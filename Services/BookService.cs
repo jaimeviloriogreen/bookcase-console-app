@@ -1,7 +1,8 @@
+using Bookcase.Models;
 class BookService(BookRepository bookRepository) {
   private readonly BookRepository _bookRepository = bookRepository;
 
-  public List<BoookModel> SelectAll() {
+  public List<BookModel> SelectAll() {
     return _bookRepository.SelectAll();
   }
   public int Delete(int id) {
